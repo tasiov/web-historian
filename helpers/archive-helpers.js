@@ -11,9 +11,11 @@ var _ = require('underscore');
  */
 
 exports.paths = {
-  siteAssets: path.join(__dirname, '../web/public'),
+  // siteAssets: path.join(__dirname, '../web/public'),
   archivedSites: path.join(__dirname, '../archives/sites'),
-  list: path.join(__dirname, '../archives/sites.txt')
+  list: path.join(__dirname, '../archives/sites.txt'),
+  loading: path.join(__dirname, '../web/public/loading.html'),
+  index: path.join(__dirname, '../web/public/index.html')
 };
 
 // Used for stubbing paths for tests, do not modify
@@ -25,6 +27,7 @@ exports.initialize = function(pathsObj) {
 
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
+
 
 exports.readListOfUrls = function(callback) {
   fs.readFile(exports.paths.list, 'utf8', function(err, data) {
@@ -39,15 +42,16 @@ exports.isUrlInList = function(targetUrl, callback) {
 };
 
 exports.addUrlToList = function(url, callback, res) {
-  fs.appendFile(exports.paths.list, url +  '\n', function(err) {
+  fs.appendFile(exports.paths.list, url + '\n', function(err) {
     if (err) throw err;
-    callback(res, '', 302);
+    fs.readFile(exports.paths.loading, function(err, data) {
+      callback(res, data, 302);
+    });
   });
 };
 
 exports.isUrlArchived = function(url, callback) {
-  fs.access(exports.paths.archivedSites, fs.F_OK, function(err) {
-    // if (err) throw err;
+  fs.access(exports.paths.archivedSites + '/' + url, fs.F_OK, function(err) {
     callback(!err);
   });
 };

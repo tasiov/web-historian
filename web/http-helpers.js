@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-var archive = require('../helpers/archive-helpers');
+// var archive = require('../helpers/archive-helpers');
 
 exports.headers = headers = {
   "access-control-allow-origin": "*",
@@ -10,21 +10,9 @@ exports.headers = headers = {
   'Content-Type': "text/html"
 };
 
-exports.serveAssets = function(res, asset, callback) {
-  // Write some code here that helps serve up your static files!
-  // (Static files are things like html (yours or archived from others...),
-  // css, or anything that doesn't change often.)
-};
-
-
-
-// As you progress, keep thinking about what helper functions you can put here!
-exports.sendResponse = function(response, data, statusCode) {
+exports.serveAssets = function(response, data, statusCode) {
   statusCode = statusCode || 200;
   response.writeHead(statusCode, headers);
-  // go into sites folder
-  // pull sites data
-  // append it to data
   response.end(data);
 };
 
@@ -44,7 +32,13 @@ exports.makeActionHandler = function(actionMap) {
     if (action) {
       action(request, response);
     } else {
-      exports.sendResponse(response, '', 404);
+      exports.serveAssets(response, '', 404);
     }
   };
+};
+
+exports.readFile = function(path, res) {
+  fs.readFile(path, function(err, data) {
+    exports.serveAssets(res, data);
+  });
 };
