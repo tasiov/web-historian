@@ -1,3 +1,4 @@
+var http = require('http');
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
@@ -25,24 +26,39 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-// exports.readListOfUrls = function(callback) {
-//   fs.readFile(exports.paths.list, 'utf8', function(err, data) {
-//     var urlList = data.split('\n');
-//     callback(urlList);
-//   });
-// };
-
-// exports.isUrlInList = function() {
-//   readListOfUrls(function() {
-//     if ()
-//   });
-// };
-
-exports.addUrlToList = function() {
+exports.readListOfUrls = function(callback) {
+  fs.readFile(exports.paths.list, 'utf8', function(err, data) {
+    callback(data.split('\n'));
+  });
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlInList = function(targetUrl, callback) {
+  exports.readListOfUrls(function(data) {
+    callback(data.indexOf(targetUrl) > -1);
+  });
 };
 
-exports.downloadUrls = function() {
+exports.addUrlToList = function(url, callback, res) {
+  fs.appendFile(exports.paths.list, url +  '\n', function(err) {
+    if (err) throw err;
+    callback(res, '', 302);
+  });
+};
+
+exports.isUrlArchived = function(url, callback) {
+  fs.access(exports.paths.archivedSites, fs.F_OK, function(err) {
+    // if (err) throw err;
+    callback(!err);
+  });
+};
+
+exports.downloadUrls = function(urlArray) {
+  _.each(urlArray, function(url) {
+    var filePath = exports.paths.archivedSites + '/' + url;
+    var file = fs.createWriteStream(filePath);
+    
+    http.get( "http://"+url , function(res) {
+      res.pipe(file);
+    });
+  });
 };
