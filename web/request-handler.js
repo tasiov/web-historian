@@ -35,7 +35,7 @@ var actions = {
           httpHelpers.readFile(archive.paths.archivedSites + '/' + url, res);
         } else {
           archive.addUrlToList(url, httpHelpers.serveAssets, res);
-          archive.downloadUrls([url]);
+          // archive.downloadUrls([url]);
         }
       });
     });

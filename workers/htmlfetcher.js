@@ -1,17 +1,18 @@
 // Use the code in `archive-helpers.js` to actually download the urls
 // that are waiting.
-var http = require('http');
-var fs = require('fs');
-var path = require('path');
 var _ = require('underscore');
-var archive = require('./archive-helpers');
+var archive = require('../helpers/archive-helpers');
+var crontab = require('node-crontab');
 
-exports.updateArchive = function() {
-  // get array of urls from our list
+exports.crontab = function() {
+  crontab.scheduleJob("*/1 * * * *", function(){ //This will call this function every 2 minutes 
+      _updateArchive();
+  });
+};
+
+var _updateArchive = function() {
   archive.readListOfUrls(function(urlArray){
-    // for each url
     _.each(urlArray, function(url) {
-      // check if url is archived
       archive.isUrlArchived(url, function(isArchived) {
         if (!isArchived) {
           archive.downloadUrls([url]);

@@ -31,7 +31,9 @@ exports.initialize = function(pathsObj) {
 
 exports.readListOfUrls = function(callback) {
   fs.readFile(exports.paths.list, 'utf8', function(err, data) {
-    callback(data.split('\n'));
+    var list = data.split('\n');
+    list.pop();
+    callback(list);
   });
 };
 
