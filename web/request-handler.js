@@ -34,7 +34,7 @@ var actions = {
 
   'POST' : function (req, res) {
     httpHelpers.collectData(req, function(data) {
-      archive.addUrlToList(data.slice(4), res, httpHelpers.sendResponse);
+      archive.addUrlToList(data.slice(4), httpHelpers.sendResponse, res);
     });
   }
 };
