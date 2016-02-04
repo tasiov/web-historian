@@ -34,7 +34,7 @@ exports.collectData = function(request, callback) {
     data += chunk;
   });
   request.on('end', function() {
-    callback(JSON.parse(data));
+    callback(data);
   });
 };
 
