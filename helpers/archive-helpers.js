@@ -15,7 +15,8 @@ exports.paths = {
   archivedSites: path.join(__dirname, '../archives/sites'),
   list: path.join(__dirname, '../archives/sites.txt'),
   loading: path.join(__dirname, '../web/public/loading.html'),
-  index: path.join(__dirname, '../web/public/index.html')
+  index: path.join(__dirname, '../web/public/index.html'),
+  workLog: path.join(__dirname, '/cronlog.txt')
 };
 
 // Used for stubbing paths for tests, do not modify
@@ -32,8 +33,8 @@ exports.initialize = function(pathsObj) {
 exports.readListOfUrls = function(callback) {
   fs.readFile(exports.paths.list, 'utf8', function(err, data) {
     var list = data.split('\n');
-    list.pop();
-    callback(list);
+    // list.pop();
+    callback(data.split('\n'));
   });
 };
 
@@ -60,11 +61,13 @@ exports.isUrlArchived = function(url, callback) {
 
 exports.downloadUrls = function(urlArray) {
   _.each(urlArray, function(url) {
-    var filePath = exports.paths.archivedSites + '/' + url;
-    var file = fs.createWriteStream(filePath);
-    
-    http.get( "http://"+url , function(res) {
-      res.pipe(file);
-    });
+    if (url) {
+      var filePath = exports.paths.archivedSites + '/' + url;
+      var file = fs.createWriteStream(filePath);
+      
+      http.get( "http://"+url , function(res) {
+        res.pipe(file);
+      });
+    }
   });
 };
